@@ -7,7 +7,7 @@ chmod +x lunch_table_generator
 
 Run solution
 ```
-./lunch_table_generator
+./lunch_table_generator.py
 ```
 
 ## Problem Statement
