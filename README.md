@@ -1,3 +1,15 @@
+# Lunch Problem
+
+Add write permissions
+```
+chmod +x lunch_table_generator
+```
+
+Run solution
+```
+./lunch_table_generator
+```
+
 ## Problem Statement
 
 I have a lunch table.
