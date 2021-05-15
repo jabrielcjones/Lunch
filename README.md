@@ -2,7 +2,7 @@
 
 Add write permissions
 ```
-chmod +x lunch_table_generator
+chmod +x lunch_table_generator.py
 ```
 
 Run solution

@@ -3,11 +3,97 @@
 import random
 import sys
 
-if __name__ == "__main__":
+
+def display_guest_list(guests, seats, prev_attendees_file):
     '''
     '''
 
-    # Handle arguments
+    print('Printing out {0} guests for {1} seats'.format(len(guests), seats))
+    print('=======================================')
+
+    if len(guests) == 0:
+        print('No new guests available.')
+        print('=======================================')
+
+    else:
+        for guest in guests:
+            print(guest + ';')
+
+        print('=======================================')
+
+        update_previous_attendees_list(guests, prev_attendees_file)
+
+
+def get_potential_guests(emails_file):
+    '''
+    '''
+
+    potential_guests = []
+
+    with open(emails_file, 'r') as emails:
+        for email in emails:
+            email = email.split()
+            email[2] = email[2][1:-2]
+            potential_guests.append(email)
+
+    return potential_guests
+
+
+def get_previous_attendees(prev_attendees_file):
+    '''
+    '''
+
+    previous_attendees = []
+
+    with open(prev_attendees_file, 'r') as prev_attendees:
+        for attendee in prev_attendees:
+            # print(attendee.strip())
+            previous_attendees.append(attendee.strip()[:-1])
+
+    return previous_attendees
+
+
+def create_short_list(potential_guest_emails, previous_attendees):
+    '''
+    Create a short list of potential guests who are not on the previous attendees list
+    '''
+
+    return list(set(potential_guest_emails) - set(previous_attendees))
+
+
+def create_guest_list(short_list, seats):
+    '''
+    '''
+
+    guests = []
+
+    if len(short_list) < int(seats):
+        guests = short_list
+
+    else:
+        while len(guests) < int(seats):
+            candidate = random.choice(short_list)
+
+            if candidate not in guests:
+                guests.append(candidate)
+
+    return guests
+
+
+def update_previous_attendees_list(guests, prev_attendees_file):
+    '''
+    '''
+
+    with open(prev_attendees_file, 'a') as prev_attendees:
+        for guest in guests:
+            prev_attendees.write(guest + ';\n')
+
+    print('Attendees List Updated: {}'.format(prev_attendees_file))
+
+
+if __name__ == "__main__":
+    '''
+    '''
 
     try:
         seats = sys.argv[1]
@@ -23,55 +109,14 @@ if __name__ == "__main__":
         print('ERROR: {}'.format(e))
         exit()
 
-    # Extract data from files
-    potential_guests = []
-    previous_attendees = []
+    potential_guests = get_potential_guests(emails_file)
 
-    with open(emails_file, 'r') as emails, open(prev_attendees_file, 'r') as prev_attendees:
-        for email in emails:
-            email = email.split()
-            email[2] = email[2][1:-2]
-            potential_guests.append(email)
-
-        for attendee in prev_attendees:
-            # print(attendee.strip())
-            previous_attendees.append(attendee.strip()[:-1])
-
-    # Use seat count to define sample space
-    # Generate a list of unique random numbers equal to seat count
-    guests = []
+    previous_attendees = get_previous_attendees(prev_attendees_file)
 
     potential_guest_emails = [guest[2] for guest in potential_guests]
-    # previous_attendees_emails = [prev_attendee for prev_attendee in previous_attendees]
 
-    short_list = list(set(potential_guest_emails) - set(previous_attendees))
+    short_list = create_short_list(potential_guest_emails, previous_attendees)
 
-    if len(short_list) < int(seats):
-        guests = short_list
+    guests = create_guest_list(short_list, seats)
 
-    else:
-        while len(guests) < int(seats):
-            candidate = random.choice(potential_guest_emails)
-
-            # if candidate not in guests and candidate not in previous_attendees:
-            if candidate not in guests:
-                guests.append(candidate)
-
-    print('Printing out {} attendee list'.format(seats))
-    print('=======================================')
-
-    if len(guests) == 0:
-        print('No new guests available.')
-        print('=======================================')
-
-    else:
-        for guest in guests:
-            print(guest + ';')
-
-        print('=======================================')
-
-        with open(prev_attendees_file, 'a') as prev_attendees:
-            for guest in guests:
-                prev_attendees.write(guest + ';\n')
-
-        print('Attendees List Updated: {}'.format(prev_attendees_file))
+    display_guest_list(guests, seats, prev_attendees_file)
